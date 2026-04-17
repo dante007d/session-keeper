@@ -47,6 +47,20 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "panel-purple": {
+          DEFAULT: "hsl(var(--panel-purple))",
+          foreground: "hsl(var(--panel-purple-foreground))",
+        },
+        "panel-green": {
+          DEFAULT: "hsl(var(--panel-green))",
+          foreground: "hsl(var(--panel-green-foreground))",
+        },
+        "surface-dark": {
+          DEFAULT: "hsl(var(--surface-dark))",
+          foreground: "hsl(var(--surface-dark-foreground))",
+        },
+        present: "hsl(var(--present))",
+        absent: "hsl(var(--absent))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
