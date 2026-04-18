@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import PastSessionsDrawer from "./PastSessionsDrawer";
 
 const links = [
   { to: "/", label: "Dashboard" },
@@ -52,9 +53,12 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/60 border border-border">
-          <span className="h-1.5 w-1.5 rounded-full bg-present animate-pulse-dot" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Live</span>
+        <div className="flex items-center gap-2">
+          <PastSessionsDrawer />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/60 border border-border">
+            <span className="h-1.5 w-1.5 rounded-full bg-present animate-pulse-dot" />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Live</span>
+          </div>
         </div>
       </nav>
     </motion.header>
