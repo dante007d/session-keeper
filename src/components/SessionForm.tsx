@@ -1,7 +1,5 @@
-import { Users, Mic, HeartHandshake, FileText } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { motion } from "framer-motion";
+import FloatingField from "./FloatingField";
 
 export interface SessionDetails {
   resourcePersons: string;
@@ -20,76 +18,61 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
     onChange({ ...value, [key]: v });
 
   return (
-    <section className="rounded-3xl bg-card shadow-panel overflow-hidden">
-      <header className="bg-gradient-purple px-6 py-5 text-panel-purple-foreground flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-          <FileText className="h-5 w-5" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold leading-tight">Session Details</h2>
-          <p className="text-xs text-white/80">Capture what happened in this session</p>
-        </div>
-      </header>
-
-      <div className="p-6 space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="resource" className="flex items-center gap-2 text-sm font-semibold">
-            <Mic className="h-4 w-4 text-primary" /> Resource Persons
-          </Label>
-          <Input
-            id="resource"
-            placeholder="e.g. Dr. Aditi Sharma, Mr. Rohan Kumar"
-            value={value.resourcePersons}
-            maxLength={200}
-            onChange={(e) => update("resourcePersons", e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="host" className="flex items-center gap-2 text-sm font-semibold">
-            <Users className="h-4 w-4 text-primary" /> Session Host
-          </Label>
-          <Input
-            id="host"
-            placeholder="Name of the host"
-            value={value.host}
-            maxLength={100}
-            onChange={(e) => update("host", e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="volunteers" className="flex items-center gap-2 text-sm font-semibold">
-            <HeartHandshake className="h-4 w-4 text-primary" /> Volunteers
-          </Label>
-          <Input
-            id="volunteers"
-            placeholder="Comma-separated names"
-            value={value.volunteers}
-            maxLength={300}
-            onChange={(e) => update("volunteers", e.target.value)}
-          />
-          <p className="text-xs text-muted-foreground">Separate multiple names with commas.</p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="summary" className="flex items-center gap-2 text-sm font-semibold">
-            <FileText className="h-4 w-4 text-primary" /> Session Summary
-          </Label>
-          <Textarea
-            id="summary"
-            placeholder="A brief description of what was covered…"
-            rows={5}
-            maxLength={1000}
-            value={value.summary}
-            onChange={(e) => update("summary", e.target.value)}
-          />
-          <p className="text-xs text-muted-foreground text-right">
-            {value.summary.length}/1000
-          </p>
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1], delay: 0.1 }}
+      className="surface-card rounded-3xl overflow-hidden relative noise"
+    >
+      {/* Header */}
+      <div className="relative px-8 pt-8 pb-6 border-b border-border/60">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-3">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle animate-pulse-dot" />
+              01 / SESSION
+            </p>
+            <h2 className="text-2xl font-semibold tracking-tight">Session Details</h2>
+            <p className="text-sm text-muted-foreground mt-1.5">
+              Capture the essentials. Keep it short.
+            </p>
+          </div>
+          <span className="font-dot text-3xl text-muted-foreground/40 leading-none select-none">●●●</span>
         </div>
       </div>
-    </section>
+
+      {/* Body */}
+      <div className="p-8 space-y-5">
+        <FloatingField
+          label="Resource Persons"
+          value={value.resourcePersons}
+          maxLength={200}
+          onChange={(e) => update("resourcePersons", e.target.value)}
+        />
+        <FloatingField
+          label="Session Host"
+          value={value.host}
+          maxLength={100}
+          onChange={(e) => update("host", e.target.value)}
+        />
+        <FloatingField
+          label="Volunteers"
+          value={value.volunteers}
+          maxLength={300}
+          hint="Comma-separated names"
+          onChange={(e) => update("volunteers", e.target.value)}
+        />
+        <FloatingField
+          label="Session Summary"
+          multiline
+          rows={5}
+          maxLength={1000}
+          value={value.summary}
+          hint={`${value.summary.length}/1000`}
+          onChange={(e) => update("summary", e.target.value)}
+        />
+      </div>
+    </motion.section>
   );
 };
 

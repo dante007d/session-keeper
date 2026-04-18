@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Save, GraduationCap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import SessionForm, { type SessionDetails } from "@/components/SessionForm";
 import AttendanceTable, { type Member } from "@/components/AttendanceTable";
 import SessionSummaryCard from "@/components/SessionSummaryCard";
+import Navbar from "@/components/Navbar";
 
 const initialMembers: Member[] = [
   { id: crypto.randomUUID(), name: "Aarav Patel", present: true },
@@ -43,65 +44,127 @@ const Index = () => {
     setSavedAt(new Date());
     toast({
       title: "Session compiled",
-      description: "Your session summary is ready below.",
+      description: "Your summary is ready below.",
     });
     setTimeout(() => {
       document.getElementById("summary-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
+    }, 120);
   };
 
   return (
-    <main className="min-h-screen px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-7xl space-y-8">
-        {/* Header */}
-        <header className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur text-white text-xs font-semibold border border-white/20">
-            <GraduationCap className="h-4 w-4" />
-            BEC DEV CLUB
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow">
-            BEC DEV Attendance
-          </h1>
-          <p className="text-white/85 max-w-xl mx-auto text-sm sm:text-base">
-            Record session details, mark attendance, and export a clean summary — all in one place.
-          </p>
-        </header>
+    <>
+      <Navbar />
+      <main className="relative min-h-screen pt-28 pb-20 px-6">
+        {/* Background dot grid */}
+        <div className="pointer-events-none fixed inset-0 bg-dot-grid opacity-60" aria-hidden />
+        <div className="pointer-events-none fixed inset-x-0 top-0 h-[60vh] bg-gradient-to-b from-primary/[0.06] to-transparent" aria-hidden />
 
-        {/* Two-panel layout */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <SessionForm value={details} onChange={setDetails} />
-          <AttendanceTable
-            members={members}
-            onAdd={addMember}
-            onToggle={toggleMember}
-            onRemove={removeMember}
-          />
-        </div>
-
-        {/* Action */}
-        <div className="flex justify-center">
-          <Button
-            size="lg"
-            onClick={handleSave}
-            className="bg-gradient-purple text-panel-purple-foreground hover:opacity-95 shadow-glow-purple px-8 h-12 text-base font-semibold rounded-xl"
+        <div className="relative mx-auto max-w-6xl">
+          {/* Hero */}
+          <motion.section
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+            }}
+            className="text-center pt-8 pb-14"
           >
-            <Save className="h-5 w-5 mr-2" />
-            Export / Save Session
-          </Button>
-        </div>
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-7"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-dot" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                BEC DEV CLUB · ATTENDANCE OS
+              </span>
+            </motion.div>
 
-        {/* Summary card */}
-        {savedAt && (
-          <div id="summary-card" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <SessionSummaryCard details={details} members={members} generatedAt={savedAt} />
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+              className="text-5xl sm:text-7xl font-semibold tracking-tight leading-[0.95]"
+            >
+              Sessions, recorded
+              <br />
+              <span className="text-gradient-red">beautifully.</span>
+            </motion.h1>
+
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+              className="mt-6 max-w-xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed"
+            >
+              A focused, minimal way to capture session details and mark attendance.
+              Local-first. Zero clutter.
+            </motion.p>
+
+            <motion.div
+              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-10 flex items-center justify-center gap-6 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground"
+            >
+              <span>● Local-only</span>
+              <span className="hidden sm:inline">●</span>
+              <span className="hidden sm:inline">No account</span>
+              <span>●</span>
+              <span>Instant export</span>
+            </motion.div>
+          </motion.section>
+
+          {/* Two-panel */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <SessionForm value={details} onChange={setDetails} />
+            <AttendanceTable
+              members={members}
+              onAdd={addMember}
+              onToggle={toggleMember}
+              onRemove={removeMember}
+            />
           </div>
-        )}
 
-        <footer className="text-center text-xs text-white/70 pt-4">
-          Built for BEC DEV Club · Local-only, your data never leaves this browser.
-        </footer>
-      </div>
-    </main>
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.32, 0.72, 0, 1] }}
+            className="mt-12 flex flex-col items-center gap-4"
+          >
+            <button
+              onClick={handleSave}
+              className="group relative inline-flex items-center gap-3 h-14 px-8 rounded-full bg-foreground text-background font-medium tracking-tight text-[15px] transition-spring hover:scale-[1.03] active:scale-[0.98] shadow-elevated"
+            >
+              <span className="relative z-10">Compile Session</span>
+              <span className="relative z-10 flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground transition-spring group-hover:rotate-90">
+                <ArrowDown className="h-3.5 w-3.5" />
+              </span>
+              <span className="absolute inset-0 rounded-full bg-foreground opacity-0 group-hover:opacity-100 blur-xl transition-smooth" aria-hidden />
+            </button>
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              ⌘ Generates a shareable summary card below
+            </p>
+          </motion.div>
+
+          {/* Summary */}
+          {savedAt && (
+            <div id="summary-card" className="mt-16 scroll-mt-28">
+              <SessionSummaryCard details={details} members={members} generatedAt={savedAt} />
+            </div>
+          )}
+
+          {/* Footer */}
+          <footer className="mt-24 pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="font-dot text-2xl text-muted-foreground/40 tracking-widest select-none">
+              BEC · DEV · CLUB
+            </p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              Built locally · Your data never leaves this browser
+            </p>
+          </footer>
+        </div>
+      </main>
+    </>
   );
 };
 
