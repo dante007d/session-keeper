@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Check, X, Plus, Trash2, ClipboardList } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import ToggleSwitch from "./ToggleSwitch";
 
 export interface Member {
   id: string;
@@ -29,113 +30,160 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove }: AttendanceTable
 
   const present = members.filter((m) => m.present).length;
   const absent = members.length - present;
+  const total = members.length;
+  const ratio = total ? Math.round((present / total) * 100) : 0;
 
   return (
-    <section className="rounded-3xl bg-card shadow-panel overflow-hidden">
-      <header className="bg-gradient-green px-6 py-5 text-panel-green-foreground flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-          <ClipboardList className="h-5 w-5" />
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1], delay: 0.2 }}
+      className="surface-card rounded-3xl overflow-hidden relative noise"
+    >
+      {/* Header */}
+      <div className="relative px-8 pt-8 pb-6 border-b border-border/60">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-3">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle animate-pulse-dot" />
+              02 / ROSTER
+            </p>
+            <h2 className="text-2xl font-semibold tracking-tight">Attendance</h2>
+            <p className="text-sm text-muted-foreground mt-1.5">
+              Toggle each member. Add or remove as needed.
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Present</p>
+            <p className="font-mono text-3xl font-semibold tabular-nums">
+              <span className="text-foreground">{present}</span>
+              <span className="text-muted-foreground/40">/{total}</span>
+            </p>
+          </div>
         </div>
-        <div className="flex-1">
-          <h2 className="text-xl font-bold leading-tight">Attendance</h2>
-          <p className="text-xs text-white/85">Mark members present or absent</p>
-        </div>
-        <div className="hidden sm:flex items-center gap-2 text-xs font-semibold">
-          <span className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur">
-            ✅ {present}
-          </span>
-          <span className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur">
-            ❌ {absent}
-          </span>
-        </div>
-      </header>
 
-      <div className="p-6 space-y-4">
+        {/* Ratio bar */}
+        <div className="mt-5 h-1 w-full rounded-full bg-secondary overflow-hidden">
+          <motion.div
+            className="h-full bg-primary"
+            initial={{ width: 0 }}
+            animate={{ width: `${ratio}%` }}
+            transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+          />
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="p-8 space-y-5">
         {/* Add member */}
         <div className="flex gap-2">
-          <Input
-            placeholder="Add new member name…"
-            value={newName}
-            maxLength={80}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleAdd();
-              }
-            }}
-          />
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              placeholder="Add member name…"
+              value={newName}
+              maxLength={80}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAdd();
+                }
+              }}
+              className="w-full h-12 px-4 rounded-xl bg-secondary/40 border border-border text-sm placeholder:text-muted-foreground outline-none transition-smooth focus:border-primary/60 focus:ring-2 focus:ring-primary/15 focus:bg-secondary/60"
+            />
+          </div>
           <Button
             type="button"
             onClick={handleAdd}
             disabled={!newName.trim()}
-            className="bg-gradient-green text-panel-green-foreground hover:opacity-95 shadow-glow-green"
+            className="h-12 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth disabled:opacity-40 shadow-glow-red"
           >
-            <Plus className="h-4 w-4 mr-1" /> Add
+            <Plus className="h-4 w-4 mr-1.5" /> Add
           </Button>
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border border-border overflow-hidden">
-          <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-2.5 bg-muted/60 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            <span>Name</span>
-            <span>Present?</span>
+        {/* List */}
+        <div className="rounded-2xl bg-background/40 border border-border overflow-hidden">
+          <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-5 py-3 border-b border-border/60 bg-secondary/30">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground w-6">#</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Member</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Status</span>
             <span className="sr-only">Remove</span>
           </div>
 
           {members.length === 0 ? (
-            <div className="px-4 py-12 text-center text-sm text-muted-foreground">
-              No members yet. Add one above to get started.
+            <div className="px-5 py-16 text-center">
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground/60">— roster empty —</p>
+              <p className="text-sm text-muted-foreground mt-2">Add a member above to begin.</p>
             </div>
           ) : (
-            <ul className="divide-y divide-border">
-              {members.map((m) => (
-                <li
-                  key={m.id}
-                  className="grid grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-3 transition-base hover:bg-accent/50"
-                >
-                  <span className="font-medium text-sm truncate">{m.name}</span>
-
-                  <button
-                    type="button"
-                    onClick={() => onToggle(m.id)}
-                    aria-label={m.present ? "Mark absent" : "Mark present"}
-                    className={cn(
-                      "h-9 w-9 rounded-lg flex items-center justify-center transition-base font-bold",
-                      m.present
-                        ? "bg-present text-white shadow-glow-green hover:scale-105"
-                        : "bg-absent text-white hover:scale-105"
-                    )}
+            <ul>
+              <AnimatePresence initial={false}>
+                {members.map((m, i) => (
+                  <motion.li
+                    key={m.id}
+                    layout
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -10, height: 0 }}
+                    transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                    className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-5 py-3.5 border-b border-border/40 last:border-b-0 transition-smooth hover:bg-secondary/30 group"
                   >
-                    {m.present ? <Check className="h-5 w-5" /> : <X className="h-5 w-5" />}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onRemove(m.id)}
-                    aria-label={`Remove ${m.name}`}
-                    className="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-base"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </li>
-              ))}
+                    <span className="font-mono text-[11px] text-muted-foreground/60 w-6 tabular-nums">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[15px] font-medium truncate">{m.name}</p>
+                      <p className={cn(
+                        "text-[10px] font-mono uppercase tracking-widest mt-0.5 transition-smooth",
+                        m.present ? "text-present" : "text-muted-foreground/60"
+                      )}>
+                        {m.present ? "● Present" : "○ Absent"}
+                      </p>
+                    </div>
+                    <ToggleSwitch
+                      size="sm"
+                      checked={m.present}
+                      onChange={() => onToggle(m.id)}
+                      ariaLabel={m.present ? "Mark absent" : "Mark present"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => onRemove(m.id)}
+                      aria-label={`Remove ${m.name}`}
+                      className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground/60 opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-primary/10 transition-smooth"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
             </ul>
           )}
         </div>
 
-        {/* Counter */}
-        <div className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-3 text-sm">
-          <span className="font-semibold">
-            <span className="text-present">{present} Present</span>
-            <span className="text-muted-foreground"> / </span>
-            <span className="text-absent">{absent} Absent</span>
-          </span>
-          <span className="text-muted-foreground">out of {members.length}</span>
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-2">
+          <Stat label="Present" value={present} accent="present" />
+          <Stat label="Absent" value={absent} accent="absent" />
+          <Stat label="Total" value={total} accent="muted" />
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
+
+const Stat = ({ label, value, accent }: { label: string; value: number; accent: "present" | "absent" | "muted" }) => (
+  <div className="rounded-xl bg-secondary/30 border border-border px-4 py-3">
+    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
+    <p className={cn(
+      "text-2xl font-semibold tabular-nums mt-1",
+      accent === "present" && "text-present",
+      accent === "absent" && "text-primary",
+      accent === "muted" && "text-foreground",
+    )}>{String(value).padStart(2, "0")}</p>
+  </div>
+);
 
 export default AttendanceTable;
