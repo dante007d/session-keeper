@@ -19,13 +19,14 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1], delay: 0.1 }}
-      className="surface-card rounded-3xl overflow-hidden relative noise"
+      transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: 0.05 }}
+      className="surface-card rounded-3xl overflow-hidden relative"
+      style={{ willChange: "transform, opacity" }}
     >
       {/* Header */}
-      <div className="relative px-8 pt-8 pb-6 border-b border-border/60">
+      <div className="relative px-6 sm:px-8 pt-7 pb-5 border-b border-border/60">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-3">
@@ -42,7 +43,7 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
       </div>
 
       {/* Body */}
-      <div className="p-8 space-y-5">
+      <div className="p-6 sm:p-8 space-y-5">
         <FloatingField
           label="Resource Persons"
           value={value.resourcePersons}
