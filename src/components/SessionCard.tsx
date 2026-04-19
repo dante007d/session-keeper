@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Session, formatDate } from "@/lib/sessionsStore";
+import { type Session, formatDate } from "@/lib/sessionsStore";
 
 interface Props {
   session: Session;
@@ -15,17 +16,16 @@ const SessionCard = ({ session, index = 0 }: Props) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1], delay: 0.05 * index }}
-      whileHover={{ y: -4 }}
+      transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1], delay: Math.min(0.04 * index, 0.24) }}
+      whileHover={{ y: -3 }}
+      style={{ willChange: "transform, opacity" }}
     >
       <Link
         to={`/session/${session.id}`}
         className="group relative block surface-card rounded-3xl p-7 overflow-hidden transition-smooth hover:border-primary/30"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/[0.06] group-hover:to-transparent transition-smooth pointer-events-none" />
-
         <div className="relative">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div className="min-w-0">
@@ -48,7 +48,6 @@ const SessionCard = ({ session, index = 0 }: Props) => {
             </p>
           </div>
 
-          {/* Footer stats */}
           <div className="flex items-end justify-between pt-5 border-t border-border/60">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Attendance</p>
@@ -70,4 +69,4 @@ const SessionCard = ({ session, index = 0 }: Props) => {
   );
 };
 
-export default SessionCard;
+export default memo(SessionCard);
