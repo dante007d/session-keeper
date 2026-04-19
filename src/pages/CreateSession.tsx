@@ -9,13 +9,6 @@ import Navbar from "@/components/Navbar";
 import FloatingField from "@/components/FloatingField";
 import { sessionsStore } from "@/lib/sessionsStore";
 
-const initialMembers: Member[] = [
-  { id: crypto.randomUUID(), name: "Aarav Patel", present: true },
-  { id: crypto.randomUUID(), name: "Diya Sharma", present: true },
-  { id: crypto.randomUUID(), name: "Kabir Singh", present: false },
-  { id: crypto.randomUUID(), name: "Meera Iyer", present: true },
-  { id: crypto.randomUUID(), name: "Rohan Verma", present: false },
-];
 
 const CreateSession = () => {
   const navigate = useNavigate();
@@ -26,14 +19,28 @@ const CreateSession = () => {
     volunteers: "",
     summary: "",
   });
-  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const [members, setMembers] = useState<Member[]>([]);
 
-  const addMember = (name: string) =>
-    setMembers((prev) => [...prev, { id: crypto.randomUUID(), name, present: true }]);
+  const addMember = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setMembers((prev) => {
+      if (prev.some((m) => m.name.toLowerCase() === trimmed.toLowerCase())) return prev;
+      return [...prev, { id: crypto.randomUUID(), name: trimmed, present: true }];
+    });
+  };
   const toggleMember = (id: string) =>
     setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, present: !m.present } : m)));
   const removeMember = (id: string) =>
     setMembers((prev) => prev.filter((m) => m.id !== id));
+  const pickFromRoster = (names: string[]) =>
+    setMembers((prev) => {
+      const have = new Set(prev.map((m) => m.name.toLowerCase()));
+      const additions = names
+        .filter((n) => !have.has(n.toLowerCase()))
+        .map((name) => ({ id: crypto.randomUUID(), name, present: true }));
+      return [...prev, ...additions];
+    });
 
   const handleSave = () => {
     if (!title.trim() && !details.host.trim() && members.length === 0) {
@@ -122,6 +129,7 @@ const CreateSession = () => {
               onAdd={addMember}
               onToggle={toggleMember}
               onRemove={removeMember}
+              onPickFromRoster={pickFromRoster}
             />
           </div>
 
