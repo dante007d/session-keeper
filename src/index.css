@@ -145,8 +145,8 @@
     font-feature-settings: 'cv11', 'ss01', 'ss03';
     background-color: hsl(var(--background));
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(0 84% 55% / 0.10), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 100% 100%, hsl(0 84% 55% / 0.06), transparent 60%);
+      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(var(--primary) / 0.10), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, hsl(var(--primary) / 0.05), transparent 60%);
     background-attachment: fixed;
   }
   h1, h2, h3, h4 {
@@ -155,17 +155,15 @@
     font-weight: 600;
   }
 
-  /* Selection */
   ::selection {
     background: hsl(var(--primary) / 0.3);
     color: hsl(var(--foreground));
   }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: hsl(0 0% 18%); border-radius: 8px; border: 2px solid hsl(var(--background)); }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(0 0% 25%); }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 8px; border: 2px solid hsl(var(--background)); }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
 }
 
 @layer utilities {
