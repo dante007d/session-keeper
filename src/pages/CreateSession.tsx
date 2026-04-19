@@ -129,6 +129,7 @@ const CreateSession = () => {
               onAdd={addMember}
               onToggle={toggleMember}
               onRemove={removeMember}
+              onPickFromRoster={pickFromRoster}
             />
           </div>
 
