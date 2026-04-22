@@ -4,7 +4,7 @@ import { Plus, Search, UserPlus, X, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import ToggleSwitch from "./ToggleSwitch";
+import BubbleBurst from "./BubbleBurst";
 import { useRoster } from "@/lib/rosterStore";
 
 export interface Member {
@@ -162,10 +162,10 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
                         {m.present ? "● Present" : "○ Absent"}
                       </p>
                     </div>
-                    <ToggleSwitch
-                      size="sm"
+                    <BubbleBurst
                       checked={m.present}
                       onChange={() => onToggle(m.id)}
+                      size={32}
                       ariaLabel={m.present ? "Mark absent" : "Mark present"}
                     />
                     <button
@@ -183,11 +183,8 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
-          <Stat label="Present" value={present} accent="present" />
-          <Stat label="Absent" value={absent} accent="absent" />
-          <Stat label="Total" value={total} accent="muted" />
-        </div>
+        {/* SVG donut + stats */}
+        <AttendanceDonut presentCount={present} absentCount={absent} total={total} />
       </div>
 
       <RosterPicker
@@ -369,16 +366,52 @@ const RosterPicker = ({
   );
 };
 
-const Stat = ({ label, value, accent }: { label: string; value: number; accent: "present" | "absent" | "muted" }) => (
-  <div className="rounded-xl bg-secondary/30 border border-border px-4 py-3">
-    <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
-    <p className={cn(
-      "text-2xl font-semibold tabular-nums mt-1",
-      accent === "present" && "text-present",
-      accent === "absent" && "text-primary",
-      accent === "muted" && "text-foreground",
-    )}>{String(value).padStart(2, "0")}</p>
-  </div>
-);
+const AttendanceDonut = ({ presentCount, absentCount, total }: { presentCount: number; absentCount: number; total: number }) => {
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const progress = total > 0 ? presentCount / total : 0;
+
+  return (
+    <div className="flex items-center gap-6 mb-2">
+      <div className="relative w-24 h-24 shrink-0">
+        <svg width="96" height="96" viewBox="0 0 96 96">
+          {/* Background track */}
+          <circle cx="48" cy="48" r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth="8" />
+          {/* Progress arc */}
+          <circle
+            cx="48" cy="48" r={radius}
+            fill="none" stroke="hsl(var(--primary))" strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference * (1 - progress)}
+            transform="rotate(-90 48 48)"
+            className="transition-all duration-500 ease-out"
+          />
+        </svg>
+        {/* Center number */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-mono font-bold text-xl">{presentCount}</span>
+          <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider">present</span>
+        </div>
+      </div>
+
+      {/* Stats column */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-baseline gap-2">
+          <span className="font-mono font-bold text-2xl text-present">{String(presentCount).padStart(2, "0")}</span>
+          <span className="font-mono text-xs text-muted-foreground">present</span>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="font-mono font-bold text-2xl text-primary">{String(absentCount).padStart(2, "0")}</span>
+          <span className="font-mono text-xs text-muted-foreground">absent</span>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="font-mono font-bold text-2xl">{String(total).padStart(2, "0")}</span>
+          <span className="font-mono text-xs text-muted-foreground">total</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default AttendanceTable;

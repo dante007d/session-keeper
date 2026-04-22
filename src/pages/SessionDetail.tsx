@@ -31,7 +31,7 @@ const SessionDetail = () => {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-28 pb-20 px-6">
+      <main className="relative min-h-screen pt-20 pb-20 px-6">
         <div className="pointer-events-none fixed inset-0 bg-dot-grid opacity-60" aria-hidden />
         <div className="pointer-events-none fixed inset-x-0 top-0 h-[60vh] bg-gradient-to-b from-primary/[0.06] to-transparent" aria-hidden />
 

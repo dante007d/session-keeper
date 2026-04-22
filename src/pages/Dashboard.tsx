@@ -45,7 +45,7 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-28 pb-20 px-6">
+      <main className="relative min-h-screen pt-16 pb-12 px-6">
         <div className="pointer-events-none fixed inset-0 bg-dot-grid opacity-60" aria-hidden />
         <div className="pointer-events-none fixed inset-x-0 top-0 h-[60vh] bg-gradient-to-b from-primary/[0.06] to-transparent" aria-hidden />
 
@@ -54,33 +54,33 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-            className="pt-6 pb-12"
+            className="pt-4 pb-8"
             style={{ willChange: "transform, opacity" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-7">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass mb-4">
               <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-dot" />
               <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                 BEC DEV CLUB · DASHBOARD
               </span>
             </div>
 
-            <h1 className="text-5xl sm:text-7xl font-semibold tracking-tight leading-[0.95]">
+            <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight leading-[0.95]">
               Every session.
               <br />
-              <span className="text-gradient-red">Remembered.</span>
+              <span className="font-accent text-gradient-red">Remembered.</span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed">
+            <p className="mt-3 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed">
               A focused archive of your club's sessions. Local-first. Zero clutter.
             </p>
 
-            <div className="mt-10 grid grid-cols-3 gap-3 sm:gap-4 max-w-2xl">
+            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3 max-w-xl">
               <Stat label="Sessions" value={stats.totalSessions} />
               <Stat label="Roster" value={stats.totalMembers} />
               <Stat label="Avg Rate" value={stats.avgAttendance} suffix="%" />
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 to="/new"
                 className="group inline-flex items-center gap-3 h-12 px-6 rounded-full bg-foreground text-background font-medium tracking-tight text-sm transition-spring hover:scale-[1.03] active:scale-[0.98] shadow-elevated"
@@ -109,7 +109,7 @@ const Dashboard = () => {
           </motion.section>
 
           <section>
-            <div className="flex items-end justify-between mb-6 gap-4 flex-wrap">
+            <div className="flex items-end justify-between mb-4 gap-4 flex-wrap">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary mb-2">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle animate-pulse-dot" />
@@ -162,7 +162,7 @@ const Dashboard = () => {
             )}
           </section>
 
-          <footer className="mt-24 pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <footer className="mt-14 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="font-dot text-2xl text-muted-foreground/40 tracking-widest select-none">BEC · DEV · CLUB</p>
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               Stored locally · Your data never leaves this browser

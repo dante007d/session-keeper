@@ -63,7 +63,7 @@ const CreateSession = () => {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-28 pb-20 px-6">
+      <main className="relative min-h-screen pt-16 pb-12 px-6">
         <div className="pointer-events-none fixed inset-0 bg-dot-grid opacity-60" aria-hidden />
         <div className="pointer-events-none fixed inset-x-0 top-0 h-[60vh] bg-gradient-to-b from-primary/[0.06] to-transparent" aria-hidden />
 
@@ -73,7 +73,7 @@ const CreateSession = () => {
             initial="hidden"
             animate="show"
             variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } } }}
-            className="pt-4 pb-12"
+            className="pt-2 pb-6"
           >
             <motion.div
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
@@ -90,11 +90,11 @@ const CreateSession = () => {
             <motion.h1
               variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
-              className="text-4xl sm:text-6xl font-semibold tracking-tight leading-[0.95]"
+              className="text-3xl sm:text-5xl font-semibold tracking-tight leading-[0.95]"
             >
               New session.
               <br />
-              <span className="text-gradient-red">Make it count.</span>
+              <span className="font-accent text-gradient-red">Make it count.</span>
             </motion.h1>
 
             <motion.p
@@ -109,7 +109,7 @@ const CreateSession = () => {
             <motion.div
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6 }}
-              className="mt-10 max-w-2xl"
+              className="mt-6 max-w-2xl"
             >
               <FloatingField
                 label="Session Title"

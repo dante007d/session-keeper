@@ -135,14 +135,14 @@ const Analytics = () => {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-28 pb-20 px-6">
+      <main className="relative min-h-screen pt-16 pb-12 px-6">
         <div className="pointer-events-none fixed inset-0 bg-dot-grid opacity-60" aria-hidden />
         <div className="pointer-events-none fixed inset-x-0 top-0 h-[60vh] bg-gradient-to-b from-primary/[0.06] to-transparent" aria-hidden />
 
         <div className="relative mx-auto max-w-5xl">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-smooth mb-6"
+            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-smooth mb-4"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
           </Link>
@@ -151,18 +151,18 @@ const Analytics = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-            className="pb-10"
+            className="pb-6"
           >
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary mb-3">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle animate-pulse-dot" />
               ANALYTICS
             </p>
-            <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight leading-[0.95]">
+            <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight leading-[0.95]">
               Patterns.
               <br />
-              <span className="text-gradient-red">Made visible.</span>
+              <span className="font-accent text-gradient-red">Made visible.</span>
             </h1>
-            <p className="mt-5 max-w-xl text-base text-muted-foreground leading-relaxed">
+            <p className="mt-3 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed">
               Heatmap, streaks, and participation across {stats.totalSessions} {stats.totalSessions === 1 ? "session" : "sessions"}.
             </p>
           </motion.section>
