@@ -1,115 +1,128 @@
-import { memo, useState } from "react";
+import { memo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import anime from "@/lib/anime";
+import { animateTimeline } from "@/animations/timelineAnimations";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Clock } from "lucide-react";
 import { type Session, formatDate } from "@/lib/sessionsStore";
 import { cn } from "@/lib/utils";
+import { TagChip } from "./ArtisticElements";
 
 interface Props {
   sessions: Session[];
 }
 
-const TimelineNode = memo(({ session }: { session: Session }) => {
+const TimelineNode = memo(({ session, index }: { session: Session; index: number }) => {
   const [open, setOpen] = useState(false);
   const total = session.members.length;
   const present = session.members.filter((m) => m.present).length;
   const ratio = total ? Math.round((present / total) * 100) : 0;
+  const nodeRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    anime({
+      targets: nodeRef.current,
+      opacity: [0, 1],
+      translateX: [-10, 0],
+      duration: 500,
+      delay: index * 100,
+      easing: 'easeOutQuad'
+    });
+  }, [index]);
 
   return (
-    <li className="relative pl-10 sm:pl-12">
-      {/* Node dot */}
-      <div className="absolute left-0 top-3 flex flex-col items-center">
-        <span className="h-3.5 w-3.5 rounded-full bg-primary shadow-glow-red ring-4 ring-background" />
+    <li 
+      ref={nodeRef}
+      className="timeline-card relative pl-12 sm:pl-16 mb-8 last:mb-0 opacity-0"
+    >
+      <div className="absolute left-[5px] sm:left-[6px] top-6 -translate-x-1/2 z-10">
+        <div 
+          className="timeline-dot h-4 w-4 rounded-full bg-background border-2 border-primary flex items-center justify-center opacity-0"
+        >
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+        </div>
+        {index === 0 && (
+          <div className="absolute inset-0 h-4 w-4 rounded-full bg-primary animate-ping opacity-40 -z-10" />
+        )}
       </div>
 
-      <div className="surface-card rounded-2xl overflow-hidden">
+      <div className={cn(
+        "surface-card rounded-[1.5rem] overflow-hidden transition-all duration-300",
+        open ? "shadow-glow-soft border-primary/20" : "hover:border-primary/20"
+      )}>
         <button
           type="button"
           onClick={() => setOpen((p) => !p)}
-          className="w-full text-left flex items-center gap-3 px-5 py-4 hover:bg-secondary/30 transition-smooth"
+          className="w-full text-left flex items-center gap-4 px-6 py-5"
         >
           <div className="flex-1 min-w-0">
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">
-              {formatDate(session.createdAt)}
-            </p>
-            <h3 className="text-base sm:text-lg font-semibold tracking-tight truncate">
-              {session.title || "Untitled session"}
-            </h3>
-            {session.host && (
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                <span className="font-mono uppercase tracking-widest text-muted-foreground/60 mr-1.5 text-[9px]">Host</span>
-                {session.host}
+            <div className="flex items-center gap-3 mb-2">
+              <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground font-bold">
+                {formatDate(session.createdAt)}
               </p>
-            )}
+              {session.tags && session.tags.length > 0 && (
+                <TagChip tagId={session.tags[0]} />
+              )}
+            </div>
+            <h3 className="text-lg font-bold tracking-tight text-foreground truncate group-hover:text-primary transition-colors">
+              {session.title || "Untitled Session"}
+            </h3>
           </div>
           <div className="text-right shrink-0">
-            <p className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">Rate</p>
-            <p className="font-mono text-xl font-semibold tabular-nums text-gradient-red leading-none mt-0.5">
-              {ratio}<span className="text-muted-foreground/40 text-xs">%</span>
+            <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Pulse</p>
+            <p className="font-mono text-xl font-bold text-primary leading-none">
+              {ratio}%
             </p>
           </div>
-          <ChevronRight
-            className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform shrink-0",
-              open && "rotate-90",
-            )}
-          />
+          <div
+            className="chevron-icon h-9 w-9 rounded-full glass flex items-center justify-center text-muted-foreground shrink-0"
+            style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
+          >
+            <ChevronRight size={18} />
+          </div>
         </button>
 
         <AnimatePresence initial={false}>
           {open && (
-            <motion.div
-              key="content"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              className="overflow-hidden border-t border-border/60"
-              style={{ willChange: "height, opacity" }}
+            <motion.div 
+              initial={{ height: 0, opacity: 0, filter: "blur(8px)" }}
+              animate={{ height: "auto", opacity: 1, filter: "blur(0px)" }}
+              exit={{ height: 0, opacity: 0, filter: "blur(8px)" }}
+              transition={{ duration: 0.9, ease: [0.25, 1, 0.5, 1] }}
+              className="overflow-hidden"
             >
-              <div className="px-5 py-4 space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {present}<span className="text-muted-foreground/40">/{total}</span> present
-                  </span>
-                  <div className="flex-1 h-1 rounded-full bg-secondary overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${ratio}%` }} />
+              <div className="px-6 pb-6 pt-2 space-y-6">
+                <div className="h-px bg-border/40 w-full" />
+                
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div>
+                    <h5 className="font-bold text-[10px] uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                      <Clock size={12} /> Intelligence Summary
+                    </h5>
+                    <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                      {session.summary || "No specific summary was recorded for this session in the chronicle."}
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                     <div>
+                       <h5 className="font-bold text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Host Engagement</h5>
+                       <p className="text-sm font-bold text-foreground">{session.host || "N/A"}</p>
+                     </div>
+                     <div>
+                       <h5 className="font-bold text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Participation</h5>
+                       <p className="text-sm font-bold text-foreground">{present} / {total} Members Present</p>
+                     </div>
                   </div>
                 </div>
 
-                {session.summary && (
-                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                    {session.summary}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {session.members.slice(0, 12).map((m) => (
-                    <span
-                      key={m.id}
-                      className={cn(
-                        "px-2.5 py-1 rounded-md text-[11px] font-mono",
-                        m.present
-                          ? "bg-present/10 text-present border border-present/20"
-                          : "bg-muted/40 text-muted-foreground/70 border border-border line-through",
-                      )}
-                    >
-                      {m.name}
-                    </span>
-                  ))}
-                  {session.members.length > 12 && (
-                    <span className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-secondary text-muted-foreground border border-border">
-                      +{session.members.length - 12}
-                    </span>
-                  )}
+                <div className="flex items-center justify-between gap-4 pt-2">
+                  <Link
+                    to={`/session/${session.id}`}
+                    className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-widest shadow-glow hover:scale-[1.05] transition-spring"
+                  >
+                    Open Session <ArrowUpRight size={14} />
+                  </Link>
                 </div>
-
-                <Link
-                  to={`/session/${session.id}`}
-                  className="inline-flex items-center gap-1.5 mt-2 h-9 px-3.5 rounded-full bg-foreground text-background text-[11px] font-medium transition-spring hover:scale-[1.03]"
-                >
-                  Open session <ArrowUpRight className="h-3 w-3" />
-                </Link>
               </div>
             </motion.div>
           )}
@@ -121,13 +134,29 @@ const TimelineNode = memo(({ session }: { session: Session }) => {
 TimelineNode.displayName = "TimelineNode";
 
 const Timeline = ({ sessions }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [lineHeight, setLineHeight] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setLineHeight(containerRef.current.scrollHeight);
+      animateTimeline(containerRef.current);
+    }
+  }, [sessions]);
+
   return (
-    <div className="relative">
-      {/* Vertical line */}
-      <span className="absolute left-[6px] sm:left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-primary/40 via-border to-transparent" aria-hidden />
-      <ol className="space-y-4">
-        {sessions.map((s) => (
-          <TimelineNode key={s.id} session={s} />
+    <div ref={containerRef} className="relative py-4">
+      {/* A5. Animated Timeline Line */}
+      <div className="absolute left-[5px] sm:left-[6px] top-4 bottom-4 w-px bg-border/40 overflow-hidden">
+        <div 
+          className="timeline-line w-full bg-primary shadow-[0_0_10px_hsl(var(--primary))]"
+          style={{ height: 0 }}
+        />
+      </div>
+      
+      <ol className="relative z-10">
+        {sessions.map((s, i) => (
+          <TimelineNode key={s.id} session={s} index={i} />
         ))}
       </ol>
     </div>

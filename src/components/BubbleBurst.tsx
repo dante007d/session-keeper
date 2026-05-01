@@ -1,101 +1,100 @@
-import { memo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
+import React from 'react';
+import anime from '@/lib/anime';
+import { cn } from '@/lib/utils';
 
 interface BubbleBurstProps {
   checked: boolean;
   onChange: () => void;
   size?: number;
-  label?: string;
   ariaLabel?: string;
 }
 
-const BubbleBurst = ({ checked, onChange, size = 36, label, ariaLabel }: BubbleBurstProps) => {
-  const [bursting, setBursting] = useState(false);
+const BubbleBurst: React.FC<BubbleBurstProps> = ({ checked, onChange, size = 32, ariaLabel }) => {
+  const containerRef = React.useRef<HTMLButtonElement>(null);
+  const circleRef = React.useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
-    if (!checked) {
-      // Marking present — play burst animation
-      setBursting(true);
-
-      setTimeout(() => setBursting(false), 500);
-    }
     onChange();
+    
+    // Trigger burst animation on check
+    if (!checked && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+
+      // Spawn particles
+      for (let i = 0; i < 8; i++) {
+        const p = document.createElement('div');
+        const angle = (i / 8) * 360;
+        const dist = 20;
+        
+        p.style.cssText = `
+          position: absolute;
+          width: 4px; height: 4px;
+          border-radius: 50%;
+          background: #B8860B;
+          left: ${cx}px; top: ${cy}px;
+          pointer-events: none;
+          z-index: 10;
+        `;
+        containerRef.current.appendChild(p);
+
+        const rad = (angle * Math.PI) / 180;
+        anime({
+          targets: p,
+          translateX: Math.cos(rad) * dist,
+          translateY: Math.sin(rad) * dist,
+          opacity: [1, 0],
+          scale: [1, 0],
+          duration: 400,
+          easing: 'easeOutExpo',
+          complete: () => p.remove(),
+        });
+      }
+    }
+
+    // Scale animation for the circle
+    anime({
+      targets: circleRef.current,
+      scale: [0.8, 1],
+      duration: 300,
+      easing: 'cubicBezier(0.34, 1.56, 0.64, 1)',
+    });
   };
 
   return (
-    <div
-      className="relative flex items-center justify-center"
+    <button
+      ref={containerRef}
+      type="button"
+      onClick={handleClick}
+      aria-label={ariaLabel}
+      className="relative flex items-center justify-center rounded-full overflow-visible"
       style={{ width: size, height: size }}
     >
-      <motion.button
-        type="button"
-        aria-label={ariaLabel ?? (checked ? "Mark absent" : "Mark present")}
-        onClick={handleClick}
-        whileTap={{ scale: 0.88 }}
-        animate={{
-          backgroundColor: checked ? "hsl(var(--primary))" : "transparent",
-          borderColor: checked ? "hsl(var(--primary))" : "hsl(var(--border))",
-        }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-        className="relative z-[2] flex items-center justify-center rounded-full border cursor-pointer"
-        style={{
-          width: size,
-          height: size,
-          fontSize: size * 0.38,
-          fontWeight: 700,
-        }}
-      >
-        <motion.span
-          animate={{
-            color: checked ? "hsl(var(--primary-foreground))" : "hsl(var(--muted-foreground))",
-            scale: checked ? 1 : 0.9,
-          }}
-          transition={{ duration: 0.2 }}
-          className="font-mono select-none"
-        >
-          {label ?? (checked ? "✓" : "○")}
-        </motion.span>
-      </motion.button>
-
-      {/* Burst effects */}
-      <AnimatePresence>
-        {bursting && (
-          <>
-            {/* Expanding ring */}
-            <motion.div
-              initial={{ scale: 1, opacity: 0.7 }}
-              animate={{ scale: 2.2, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="pointer-events-none absolute z-[1] rounded-full bg-primary"
-              style={{ width: size, height: size }}
-            />
-            {/* Particle dots */}
-            {[0, 1, 2, 3, 4].map((i) => {
-              const angle = (i / 5) * Math.PI * 2;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                  animate={{
-                    x: Math.cos(angle) * size * 0.9,
-                    y: Math.sin(angle) * size * 0.9,
-                    opacity: 0,
-                    scale: 0,
-                  }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="pointer-events-none absolute z-[3] rounded-full bg-primary"
-                  style={{ width: 5, height: 5 }}
-                />
-              );
-            })}
-
-          </>
+      <div
+        ref={circleRef}
+        className={cn(
+          "w-5 h-5 rounded-md border-2 transition-colors duration-300 flex items-center justify-center",
+          checked ? "bg-primary border-primary" : "bg-transparent border-border"
         )}
-      </AnimatePresence>
-    </div>
+      >
+        {checked && (
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        )}
+      </div>
+    </button>
   );
 };
 
-export default memo(BubbleBurst);
+export default BubbleBurst;

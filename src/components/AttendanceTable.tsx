@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, UserPlus, X, Users } from "lucide-react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import anime from "@/lib/anime";
+import { Plus, Search, UserPlus, X, Users, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ interface AttendanceTableProps {
 const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster }: AttendanceTableProps) => {
   const [newName, setNewName] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   const handleAdd = () => {
     const trimmed = newName.trim();
@@ -37,19 +38,28 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
   const total = members.length;
   const ratio = total ? Math.round((present / total) * 100) : 0;
 
+  useEffect(() => {
+    anime({
+      targets: sectionRef.current,
+      opacity: [0, 1],
+      translateY: [12, 0],
+      duration: 500,
+      easing: 'cubicBezier(0.32, 0.72, 0, 1)',
+      delay: 100
+    });
+  }, []);
+
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1], delay: 0.1 }}
+    <section
+      ref={sectionRef}
       className="surface-card rounded-3xl overflow-hidden relative"
-      style={{ willChange: "transform, opacity" }}
+      style={{ opacity: 0, transform: 'translateY(12px)', willChange: "transform, opacity" }}
     >
       <div className="relative px-6 sm:px-8 pt-7 pb-5 border-b border-border/60">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary mb-3">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle animate-pulse-dot" />
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle" />
               02 / ROSTER
             </p>
             <h2 className="text-2xl font-semibold tracking-tight">Attendance</h2>
@@ -67,18 +77,14 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
         </div>
 
         <div className="mt-5 h-1 w-full rounded-full bg-secondary overflow-hidden">
-          <motion.div
-            className="h-full bg-primary"
-            initial={false}
-            animate={{ width: `${ratio}%` }}
-            transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
-            style={{ willChange: "width" }}
+          <div
+            className="h-full bg-primary transition-all duration-500 ease-out"
+            style={{ width: `${ratio}%` }}
           />
         </div>
       </div>
 
       <div className="p-6 sm:p-8 space-y-5">
-        {/* Pick from roster */}
         <Button
           type="button"
           onClick={() => setPickerOpen(true)}
@@ -90,7 +96,6 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
           <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">+ multi-select</span>
         </Button>
 
-        {/* Ad-hoc add */}
         <div className="flex gap-2">
           <div className="flex-1 relative">
             <input
@@ -112,7 +117,7 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
             type="button"
             onClick={handleAdd}
             disabled={!newName.trim()}
-            className="h-12 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth disabled:opacity-40 shadow-glow-red"
+            className="h-12 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth disabled:opacity-40"
           >
             <UserPlus className="h-4 w-4 mr-1.5" /> Add
           </Button>
@@ -139,15 +144,9 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
             </div>
           ) : (
             <ul>
-              <AnimatePresence initial={false}>
                 {members.map((m, i) => (
-                  <motion.li
+                  <li
                     key={m.id}
-                    layout
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
                     className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-5 py-3.5 border-b border-border/40 last:border-b-0 hover:bg-secondary/30 group"
                   >
                     <span className="font-mono text-[11px] text-muted-foreground/60 w-6 tabular-nums">
@@ -176,14 +175,12 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
                     >
                       <X className="h-4 w-4" />
                     </button>
-                  </motion.li>
+                  </li>
                 ))}
-              </AnimatePresence>
             </ul>
           )}
         </div>
 
-        {/* SVG donut + stats */}
         <AttendanceDonut presentCount={present} absentCount={absent} total={total} />
       </div>
 
@@ -196,7 +193,7 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
           setPickerOpen(false);
         }}
       />
-    </motion.section>
+    </section>
   );
 };
 
@@ -214,12 +211,23 @@ const RosterPicker = ({
   const { members } = useRoster();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  // Reset on open
   useEffect(() => {
     if (open) {
       setSelected(new Set());
       setQuery("");
+      
+      const t = setTimeout(() => {
+        anime({
+          targets: modalRef.current,
+          translateY: [24, 0],
+          opacity: [0, 1],
+          duration: 300,
+          easing: 'cubicBezier(0.32, 0.72, 0, 1)'
+        });
+      }, 10);
+      return () => clearTimeout(t);
     }
   }, [open]);
 
@@ -244,25 +252,20 @@ const RosterPicker = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         onClick={onClose}
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
       />
-      <motion.div
-        initial={{ y: 24, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+      <div
+        ref={modalRef}
         className="relative w-full sm:max-w-lg surface-card rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[85vh]"
-        style={{ willChange: "transform, opacity" }}
+        style={{ opacity: 0, transform: 'translateY(24px)', willChange: "transform, opacity" }}
       >
         <div className="px-6 pt-6 pb-4 border-b border-border/60">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary mb-1.5">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle animate-pulse-dot" />
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 align-middle" />
                 ROSTER
               </p>
               <h3 className="text-xl font-semibold tracking-tight">Pick attendees</h3>
@@ -272,7 +275,6 @@ const RosterPicker = ({
             </div>
             <button
               onClick={onClose}
-              aria-label="Close"
               className="h-9 w-9 rounded-full bg-secondary/60 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-smooth"
             >
               <X className="h-4 w-4" />
@@ -356,12 +358,12 @@ const RosterPicker = ({
               const names = members.filter((m) => selected.has(m.id)).map((m) => m.name);
               onConfirm(names);
             }}
-            className="h-11 px-6 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-spring hover:scale-[1.03] disabled:opacity-40 shadow-glow-red"
+            className="h-11 px-6 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-spring hover:scale-[1.03] disabled:opacity-40"
           >
             Add {selected.size > 0 ? `${selected.size} ` : ""}member{selected.size === 1 ? "" : "s"}
           </Button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -375,9 +377,7 @@ const AttendanceDonut = ({ presentCount, absentCount, total }: { presentCount: n
     <div className="flex items-center gap-6 mb-2">
       <div className="relative w-24 h-24 shrink-0">
         <svg width="96" height="96" viewBox="0 0 96 96">
-          {/* Background track */}
           <circle cx="48" cy="48" r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth="8" />
-          {/* Progress arc */}
           <circle
             cx="48" cy="48" r={radius}
             fill="none" stroke="hsl(var(--primary))" strokeWidth="8"
@@ -388,14 +388,12 @@ const AttendanceDonut = ({ presentCount, absentCount, total }: { presentCount: n
             className="transition-all duration-500 ease-out"
           />
         </svg>
-        {/* Center number */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-mono font-bold text-xl">{presentCount}</span>
           <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider">present</span>
         </div>
       </div>
 
-      {/* Stats column */}
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline gap-2">
           <span className="font-mono font-bold text-2xl text-present">{String(presentCount).padStart(2, "0")}</span>

@@ -272,7 +272,7 @@ Implement every theme as a complete CSS variable token set. Each theme must defi
 
 ---
 
-### THEME 7 — Apple Premium (Light)
+### THEME 7 — LIGHT IVORY (Light)
 *The benchmark. What Apple.com would look like as an app.*
 
 ```css

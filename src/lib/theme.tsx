@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type ThemeId = "parchment" | "arctic" | "ivory" | "obsidian" | "void";
+export type ThemeId = "parchment" | "arctic" | "ivory" | "obsidian" | "clickhouse";
 
 export interface ThemeMeta {
   id: ThemeId;
@@ -50,13 +50,13 @@ export const THEMES: ThemeMeta[] = [
     surface: "#16161e",
   },
   {
-    id: "void",
-    name: "Void Ultraviolet",
-    tagline: "Deep space aurora",
+    id: "clickhouse",
+    name: "Volt Graphite",
+    tagline: "High-contrast data core",
     isDark: true,
-    accent: "#e879f9",
-    bg: "#08060a",
-    surface: "#120e16",
+    accent: "#FFCC00",
+    bg: "#0A0A0A",
+    surface: "#1A1C1E",
   },
 ];
 
@@ -72,15 +72,26 @@ interface Ctx {
 const ThemeCtx = createContext<Ctx | null>(null);
 
 const isValidTheme = (t: string | null): t is ThemeId =>
-  t === "parchment" || t === "arctic" || t === "ivory" || t === "obsidian" || t === "void";
+  t === "parchment" || t === "arctic" || t === "ivory" || t === "obsidian" || t === "clickhouse";
 
 const apply = (t: ThemeId) => {
   const root = document.documentElement;
   const meta = THEMES.find((m) => m.id === t)!;
-  root.classList.remove("parchment", "arctic", "ivory", "obsidian", "void");
-  root.classList.add(t);
-  root.style.colorScheme = meta.isDark ? "dark" : "light";
-  root.setAttribute("data-theme", t);
+  
+  const updateDOM = () => {
+    root.classList.remove("parchment", "arctic", "ivory", "obsidian", "clickhouse");
+    root.classList.add(t);
+    root.style.colorScheme = meta.isDark ? "dark" : "light";
+    root.setAttribute("data-theme", t);
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(() => {
+      updateDOM();
+    });
+  } else {
+    updateDOM();
+  }
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
