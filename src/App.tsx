@@ -69,27 +69,7 @@ const AnimatedRoutes = () => {
 
 import { WelcomeScreen } from "./components/WelcomeScreen";
 
-const PremiumAmbientBackground = () => (
-  <div className="fixed inset-0 pointer-events-none z-[1] overflow-hidden">
-    {/* Cinematic Grain Overlay */}
-    <div className="absolute inset-0 opacity-[0.08] mix-blend-overlay pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')" }} />
-    
-    {/* Dot matrix grid */}
-    <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_100%_100%_at_50%_50%,#000_10%,transparent_100%)]" />
-
-    {/* High visibility floating ambient lights */}
-    <div className="absolute top-[-5%] -left-[5%] w-[40vw] h-[40vw] bg-primary/20 rounded-full blur-[100px]" />
-    <div className="absolute bottom-[-5%] -right-[5%] w-[35vw] h-[35vw] bg-primary/20 rounded-full blur-[100px]" />
-
-    {/* Premium Typography Watermark - Outline Style - Now visible on all screens */}
-    <div className="absolute top-[30%] -left-8 text-[15vw] font-black text-transparent tracking-tighter rotate-90 origin-left select-none opacity-50" style={{ WebkitTextStroke: "2px hsl(var(--primary))" }}>
-      DEV
-    </div>
-    <div className="absolute top-[70%] -right-8 text-[15vw] font-black text-transparent tracking-tighter -rotate-90 origin-right select-none opacity-50" style={{ WebkitTextStroke: "2px hsl(var(--primary))" }}>
-      CLUB
-    </div>
-  </div>
-);
+import { motion } from "framer-motion";
 
 const App = () => {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -110,7 +90,6 @@ const App = () => {
           <WelcomeScreen onComplete={handleWelcomeComplete} />
         ) : (
           <BrowserRouter>
-            <PremiumAmbientBackground />
             <CommandPalette />
             <ShortcutHelp />
             <AnimatedRoutes />
