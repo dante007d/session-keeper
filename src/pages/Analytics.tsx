@@ -1,4 +1,4 @@
-import { useMemo, useState, memo } from "react";
+import React, { useMemo, useState, memo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Flame, TrendingUp, Users, Calendar, Trophy, User } from "lucide-react";
@@ -145,7 +145,7 @@ const Analytics = () => {
       <main className="relative min-h-screen pt-16 pb-12 px-6">
         <div className="relative mx-auto max-w-6xl">
           <Link
-            to="/"
+            to="/teacher/dashboard"
             className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-smooth mb-6"
           >
             <ArrowLeft className="h-3 w-3 group-hover:-translate-x-1 transition-transform" /> Back to Chronicle
@@ -191,7 +191,7 @@ const Analytics = () => {
               <h3 className="text-xl font-bold mb-4">No data to process</h3>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">The intelligence engine requires at least one archived session to begin generating patterns.</p>
               <Link
-                to="/new"
+                to="/teacher/new"
                 className="inline-flex items-center gap-2 mt-8 h-14 px-8 rounded-full bg-primary text-primary-foreground font-bold text-sm tracking-wide shadow-glow transition-spring hover:scale-[1.03]"
               >
                 Create first session

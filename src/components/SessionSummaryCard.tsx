@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Check, X } from "lucide-react";
-import type { SessionDetails } from "./SessionForm";
+import { Check, X, ExternalLink } from "lucide-react";
+import type { SessionDetails } from "@/lib/sessionsStore";
 import type { Member } from "./AttendanceTable";
 
 interface SessionSummaryCardProps {
@@ -9,12 +9,12 @@ interface SessionSummaryCardProps {
   generatedAt: Date;
 }
 
-const Row = ({ label, value }: { label: string; value: string }) => (
+const Row = ({ label, value, children }: { label: string; value?: string; children?: React.ReactNode }) => (
   <div className="grid grid-cols-[140px_1fr] gap-6 py-4 border-b border-border/40 last:border-b-0">
     <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground pt-1">{label}</p>
-    <p className="text-[15px] text-foreground leading-relaxed">
-      {value || <span className="text-muted-foreground/50 italic">— not provided</span>}
-    </p>
+    <div className="text-[15px] text-foreground leading-relaxed">
+      {children || value || <span className="text-muted-foreground/50 italic">— not provided</span>}
+    </div>
   </div>
 );
 
@@ -59,6 +59,25 @@ const SessionSummaryCard = ({ details, members, generatedAt }: SessionSummaryCar
         <Row label="Host" value={details.host} />
         <Row label="Volunteers" value={details.volunteers} />
         <Row label="Summary" value={details.summary} />
+        <Row label="Links">
+          <div className="flex flex-wrap gap-3">
+            {details.resources && details.resources.length > 0 ? (
+              details.resources.map((res, i) => (
+                <a 
+                  key={i} 
+                  href={res.url} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-secondary/50 border border-border text-[11px] font-bold text-primary hover:bg-primary hover:text-white transition-all"
+                >
+                  {res.label} <ExternalLink size={10} />
+                </a>
+              ))
+            ) : (
+              <span className="text-muted-foreground/50 italic">— no links attached</span>
+            )}
+          </div>
+        </Row>
       </div>
 
       {/* Roster split */}

@@ -86,60 +86,44 @@
      Font: IBM Plex Sans (all), IBM Plex Mono
      ═══════════════════════════════════════════════ */
   .arctic {
-    --background: 210 28% 95%;
+    --background: 210 28% 97%;         /* #F0F4F8 approx */
     --foreground: 213 80% 12%;
-
-    --card: 210 20% 90%;
+    --card: 0 0% 100%;
     --card-foreground: 213 80% 12%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 213 80% 12%;
-
-    --primary: 210 100% 35%;           /* cobalt #0050b3 */
+    --primary: 210 100% 45%;           /* Brighter Cobalt */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 210 100% 40%;
-
-    --secondary: 210 18% 86%;
+    --primary-glow: 210 100% 50%;
+    --secondary: 210 20% 92%;
     --secondary-foreground: 213 50% 20%;
-
-    --muted: 210 15% 88%;
-    --muted-foreground: 210 28% 42%;
-
-    --accent: 210 20% 84%;
+    --muted: 210 15% 94%;
+    --muted-foreground: 210 28% 45%;
+    --accent: 210 30% 90%;
     --accent-foreground: 213 80% 12%;
-
-    --destructive: 0 84% 52%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 208 22% 78%;
-    --input: 210 18% 86%;
-    --ring: 210 100% 35%;
-
-    --radius: 0.375rem;
-
-    --present: 142 70% 38%;
-    --absent: 0 84% 52%;
-
+    --border: 210 20% 88%;
+    --input: 210 20% 92%;
+    --ring: 210 100% 45%;
+    --radius: 1.25rem;
+    --present: 142 70% 45%;
+    --absent: 0 84% 60%;
     --surface-elevated: 0 0% 100%;
-    --surface-glass: 210 20% 96%;
-
-    --gradient-radial: radial-gradient(ellipse at top, hsl(210 100% 35% / 0.04), transparent 60%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 96%));
-    --gradient-accent: linear-gradient(135deg, hsl(210 100% 35%), hsl(210 100% 27%));
-
-    --shadow-elevated: 0 1px 4px hsl(213 80% 12% / 0.06);
-    --shadow-glow: 0 0 24px -8px hsl(210 100% 35% / 0.25);
-    --shadow-glow-soft: 0 4px 16px -8px hsl(213 40% 20% / 0.05);
-
-    --transition-spring: all 0.15s ease-out;
-    --transition-smooth: all 0.15s ease-out;
-
-    --dot-color: 210 30% 50%;
-    --dot-opacity: 0.04;
-
-    --font-display: 'IBM Plex Sans', system-ui, sans-serif;
-    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
+    --surface-glass: 210 30% 98%;
+    --gradient-radial: radial-gradient(ellipse at top, hsl(210 100% 45% / 0.05), transparent 60%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 98%));
+    --gradient-accent: linear-gradient(135deg, hsl(210 100% 45%), hsl(210 100% 35%));
+    --shadow-elevated: 0 4px 20px hsl(213 80% 12% / 0.05);
+    --shadow-glow: 0 0 30px -10px hsl(210 100% 45% / 0.35);
+    --shadow-glow-soft: 0 10px 30px -15px hsl(213 50% 20% / 0.1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --dot-color: 210 30% 40%;
+    --dot-opacity: 0.06;
+    --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 
     --sidebar-background: 210 20% 94%;
     --sidebar-foreground: 213 50% 15%;
@@ -644,3 +628,12 @@
     transform: scale(1);
   }
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.4s ease; }

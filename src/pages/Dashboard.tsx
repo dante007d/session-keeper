@@ -1,8 +1,9 @@
-import { memo, useEffect, useMemo, useState, useCallback } from "react";
+import React, { memo, useEffect, useMemo, useState, useCallback } from "react";
 import { runHeroTimeline } from "@/animations/heroAnimations";
 import { animateStatCards } from "@/animations/cardAnimations";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calendar, GitCommitVertical, LayoutGrid, Plus, Search, Trash2, Users, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Calendar, GitCommitVertical, LayoutGrid, Plus, Search, Shield, Trash2, TrendingUp, Users, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import SessionCard from "@/components/SessionCard";
 import Timeline from "@/components/Timeline";
@@ -89,192 +90,136 @@ const Dashboard = () => {
     toast({ title: "All sessions cleared" });
   }, [clear]);
 
-  const line1 = "Every session.".split(" ");
-  const line2 = "Remembered.".split(" ");
+  const line1 = "Chronicle.".split(" ");
+  const line2 = "Mastery in motion.".split(" ");
 
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen pt-16 pb-12 px-6">
+      <main className="relative min-h-screen pt-20 pb-12 px-6">
         <div className="relative mx-auto max-w-6xl">
-          {/* A11. 3D HERO CONTAINER */}
-          <section className="relative overflow-hidden min-h-[360px] pt-8 pb-10 rounded-[3rem] px-8 sm:px-12 mb-8">
-            <ParticleField />
-            <FloatingOrbs />
-            
-            <div className="relative z-10">
-              <div className="hero-badge inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-6 border-primary/20 opacity-0">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
-                  BEC DEV CLUB · ARCHIVE SYSTEM
-                </span>
-              </div>
-
-              <h1 className="text-5xl sm:text-7xl font-bold tracking-tight leading-[0.9] mb-4">
-                <div className="text-foreground">
-                  {line1.map((w, i) => (
-                    <MaskedWord key={i} word={w} delay={i * 0.08} />
-                  ))}
-                </div>
-                <div className="text-primary italic font-accent mt-2">
-                  {line2.map((w, i) => (
-                    <MaskedWord key={i} word={w} delay={0.3 + i * 0.08} />
-                  ))}
-                </div>
-              </h1>
-
-              <div className="hero-subtitle opacity-0 max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
-                <TypewriterText 
-                  text="A premium editorial archive for your club's legacy. Precision tracking. Beautifully preserved." 
-                  delay={900}
-                />
-              </div>
-            </div>
-          </section>
-
-          <section>
-
-            {/* V1. BENTO GRID DASHBOARD */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-5">
-              <div className="stat-card md:col-span-5 surface-card rounded-3xl p-7 flex flex-col justify-between group overflow-hidden relative opacity-0">
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity pointer-events-none">
-                  <LayoutGrid size={160} />
-                </div>
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">Total Sessions</p>
-                  <h3 className="text-6xl font-bold tracking-tighter text-foreground tabular-nums">
-                    <AnimatedNumber value={stats.totalSessions} />
-                  </h3>
-                </div>
-                <div className="mt-8 flex items-center gap-3">
-                  <div className="h-1 flex-1 bg-secondary/50 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary"
-                      style={{ width: "70%" }}
-                    />
-                  </div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">System Active</span>
-                </div>
-              </div>
-
-              <div className="md:col-span-3 flex flex-col gap-4">
-                <div className="stat-card flex-1 surface-card rounded-3xl p-6 flex flex-col justify-between opacity-0">
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Roster</p>
-                  <div className="flex items-end justify-between">
-                    <h3 className="text-4xl font-bold tracking-tighter text-foreground tabular-nums">
-                      <AnimatedNumber value={stats.totalMembers} />
-                    </h3>
-                    <Users className="text-primary mb-1" size={20} />
-                  </div>
-                </div>
-                <div className="stat-card flex-1 surface-card rounded-3xl p-6 flex flex-col justify-between bg-primary/5 border-primary/20 opacity-0">
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">This Week</p>
-                  <div className="flex items-end justify-between">
-                    <h3 className="text-4xl font-bold tracking-tighter text-primary tabular-nums">
-                      <AnimatedNumber value={stats.thisWeekSessions} />
-                    </h3>
-                    <div className="font-mono text-[10px] font-bold text-primary opacity-60 mb-1">SESS.</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="stat-card md:col-span-4 surface-card rounded-3xl p-7 flex flex-col justify-between group opacity-0">
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">Avg Attendance</p>
-                  <h3 className="text-6xl font-bold tracking-tighter text-foreground tabular-nums">
-                    <AnimatedNumber value={stats.avgAttendance} />
-                    <span className="text-2xl text-muted-foreground opacity-30 ml-1">%</span>
-                  </h3>
-                </div>
-                <div className="mt-8">
-                   <div className="flex justify-between items-center mb-2">
-                     <span className="font-mono text-[10px] font-bold text-muted-foreground">Club Health</span>
-                     <span className="font-mono text-[10px] font-bold text-primary">{stats.avgAttendance}%</span>
-                   </div>
-                   <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                     <div 
-                       className="h-full bg-primary"
-                       style={{ width: `${stats.avgAttendance}%` }}
-                     />
-                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* F6. Upcoming Session Scheduler */}
-            <div
-              className="mt-8 p-8 rounded-[2.5rem] bg-primary/5 border border-primary/20 relative overflow-hidden"
+          {/* MODERN APP-LIKE HERO */}
+          <section className="mb-10">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col md:flex-row md:items-end justify-between gap-6"
             >
-              <div className="absolute top-0 right-0 p-10 opacity-[0.03] text-primary rotate-12 pointer-events-none">
-                <Calendar size={180} />
+              <div>
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-primary mb-2">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 animate-pulse" />
+                  BEC DEV CLUB · TEACHER PORTAL
+                </p>
+                <h1 className="text-4xl sm:text-6xl font-bold tracking-tight leading-[0.95]">
+                   Every session.<br />
+                   <span className="text-primary italic font-accent">Remembered.</span>
+                </h1>
+                <p className="mt-4 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
+                  Manage club archives, track participation, and broadcast updates to your students from one unified command center.
+                </p>
               </div>
-              
-              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className="text-center md:text-left">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-primary font-bold">Next Event</span>
-                  </div>
-                  <h3 className="text-3xl font-bold tracking-tight mb-2">Advanced TypeScript Patterns</h3>
-                  <p className="text-sm text-muted-foreground font-medium">Saturday, May 3rd · 10:00 AM · Hall B</p>
-                </div>
-                
-                <div className="flex gap-6">
-                   {[
-                     { label: 'Days', value: 0 },
-                     { label: 'Hrs', value: 7 },
-                     { label: 'Min', value: 42 },
-                     { label: 'Sec', value: 18 },
-                   ].map(({ label, value }) => (
-                     <div key={label} className="flex flex-col items-center">
-                       <span className="font-mono font-bold text-4xl text-foreground tabular-nums">
-                         <AnimatedNumber value={value} />
-                       </span>
-                       <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground font-bold mt-1">
-                         {label}
-                       </span>
-                     </div>
-                   ))}
-                </div>
 
+              <div className="flex flex-wrap items-center gap-3">
                 <Link
-                  to="/new"
-                  className="h-14 px-8 rounded-full bg-primary text-primary-foreground font-bold text-sm tracking-wide shadow-glow flex items-center justify-center hover:scale-[1.05] transition-spring"
+                  to="/teacher/new"
+                  className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight shadow-glow flex items-center gap-2 hover:scale-[1.03] transition-spring"
                 >
-                  Join Session
+                  <Plus size={18} /> New Session
+                </Link>
+                <Link
+                  to="/teacher/phantom"
+                  className="h-14 px-6 rounded-2xl bg-primary/10 border border-primary/20 text-primary font-bold text-sm flex items-center gap-2 hover:bg-primary/20 transition-all shadow-glow shadow-primary/5"
+                >
+                  <Shield size={18} /> Phantom Mesh
+                </Link>
+                <Link
+                  to="/teacher/roster"
+                  className="h-14 px-6 rounded-2xl bg-secondary/50 border border-border text-foreground font-bold text-sm flex items-center gap-2 hover:bg-secondary transition-all"
+                >
+                  <Users size={18} /> Roster
                 </Link>
               </div>
+            </motion.div>
+          </section>
+
+          {/* CLEAN BENTO DASHBOARD */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
+            <div className="md:col-span-4 surface-card rounded-[2rem] p-6 border-l-4 border-l-primary relative overflow-hidden group">
+               <div className="absolute top-4 right-4 text-primary/10 group-hover:scale-110 transition-transform">
+                 <LayoutGrid size={40} />
+               </div>
+               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Total Sessions</p>
+               <h3 className="text-5xl font-bold tracking-tighter text-foreground tabular-nums">
+                 <AnimatedNumber value={stats.totalSessions} />
+               </h3>
+               <p className="text-xs text-muted-foreground mt-2 font-medium">Recorded in archive</p>
             </div>
 
-            <div 
-              className="hero-cta mt-8 flex flex-wrap items-center gap-4 opacity-0"
-            >
-              <Link
-                to="/new"
-                className="group relative inline-flex items-center gap-3 h-14 px-8 rounded-full bg-foreground text-background font-bold tracking-tight text-sm transition-spring hover:scale-[1.03] active:scale-[0.98] shadow-elevated"
-              >
-                <Plus className="h-4 w-4" />
-                New Session
-                <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary text-primary-foreground transition-spring group-hover:translate-x-1">
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </Link>
-              <Link
-                to="/members"
-                className="inline-flex items-center gap-2.5 h-14 px-6 rounded-full glass border-border/40 text-foreground hover:border-primary/40 text-[11px] font-bold uppercase tracking-widest transition-smooth"
-              >
-                <Users className="h-4 w-4" /> Roster
-              </Link>
-              {sessions.length > 0 && (
-                <button
-                  onClick={handleClear}
-                  className="inline-flex items-center gap-2.5 h-14 px-6 rounded-full glass border-border/40 text-muted-foreground hover:text-destructive hover:border-destructive/40 text-[11px] font-bold uppercase tracking-widest transition-smooth"
-                >
-                  <Trash2 className="h-4 w-4" /> Clear all
-                </button>
-              )}
+            <div className="md:col-span-4 surface-card rounded-[2rem] p-6 border-l-4 border-l-emerald-500 relative overflow-hidden group">
+               <div className="absolute top-4 right-4 text-emerald-500/10 group-hover:scale-110 transition-transform">
+                 <Users size={40} />
+               </div>
+               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Active Members</p>
+               <h3 className="text-5xl font-bold tracking-tighter text-foreground tabular-nums">
+                 <AnimatedNumber value={stats.totalMembers} />
+               </h3>
+               <p className="text-xs text-muted-foreground mt-2 font-medium">From club roster</p>
             </div>
-          </section>
+
+            <div className="md:col-span-4 surface-card rounded-[2rem] p-6 border-l-4 border-l-amber-500 relative overflow-hidden group">
+               <div className="absolute top-4 right-4 text-amber-500/10 group-hover:scale-110 transition-transform">
+                 <TrendingUp size={40} />
+               </div>
+               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Avg Pulse</p>
+               <h3 className="text-5xl font-bold tracking-tighter text-foreground tabular-nums">
+                 <AnimatedNumber value={stats.avgAttendance} />
+                 <span className="text-xl text-muted-foreground ml-1">%</span>
+               </h3>
+               <p className="text-xs text-muted-foreground mt-2 font-medium">Overall participation</p>
+            </div>
+          </div>
+
+          {/* UPCOMING/ACTIVE SESSION - DYNAMIC */}
+          {sessions.length > 0 && (
+            <div className="mb-12 surface-card rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-glow-soft">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.03] to-transparent pointer-events-none" />
+              
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center text-3xl shadow-inner">
+                  {sessions[0].attendanceType === 'phantom' ? '🛡️' : '🚀'}
+                </div>
+                <div className="text-center md:text-left">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">
+                    {sessions[0].attendanceType === 'phantom' ? 'Phantom Room Ready' : 'Standard Session Ready'}
+                  </p>
+                  <h3 className="text-2xl font-bold tracking-tight">{sessions[0].title}</h3>
+                  <p className="text-sm text-muted-foreground font-medium mt-1">
+                    Host: {sessions[0].host} · Verification: {sessions[0].attendanceType?.toUpperCase()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative z-10 flex gap-4">
+                 {[
+                   { label: 'ATT', value: sessions[0].members.length },
+                   { label: 'PRES', value: sessions[0].members.filter(m => m.present).length },
+                   { label: 'TYPE', value: sessions[0].attendanceType === 'phantom' ? 'PH' : 'STD' },
+                 ].map(({ label, value }) => (
+                   <div key={label} className="h-16 w-16 rounded-2xl bg-secondary/50 flex flex-col items-center justify-center border border-border/50">
+                      <span className="font-mono font-bold text-xl text-foreground">{value}</span>
+                      <span className="text-[8px] font-bold text-muted-foreground uppercase">{label}</span>
+                   </div>
+                 ))}
+              </div>
+
+              <Link
+                to={sessions[0].attendanceType === 'phantom' ? "/teacher/phantom" : `/teacher/session/${sessions[0].id}`}
+                className="relative z-10 h-14 px-8 rounded-2xl bg-foreground text-background font-bold text-sm tracking-tight hover:scale-[1.05] transition-spring flex items-center justify-center"
+              >
+                Open Entry System
+              </Link>
+            </div>
+          )}
 
           <section className="mt-10">
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 gap-6 flex-wrap">
@@ -287,34 +232,34 @@ const Dashboard = () => {
                 
                 {/* F5. Real-time Search */}
                 <div className="relative group max-w-xl">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
                     <Search size={18} />
                   </div>
                   <input 
                     type="text"
-                    placeholder="Search titles, hosts, or tags..."
+                    placeholder="Search history..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-secondary/30 border border-border/40 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all"
+                    className="w-full bg-secondary/40 border border-border/40 rounded-[1.5rem] py-4 pl-14 pr-12 text-sm font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-inner"
                   />
                   {searchQuery && (
                     <button 
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full glass flex items-center justify-center text-muted-foreground hover:text-foreground transition-smooth"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full glass flex items-center justify-center text-muted-foreground hover:text-foreground transition-smooth"
                     >
-                      <X size={12} />
+                      <X size={14} />
                     </button>
                   )}
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1 p-1 rounded-full glass border-border/40">
+                <div className="flex items-center gap-1 p-1.5 rounded-2xl glass border-border/40">
                   <ViewBtn active={view === "grid"} onClick={() => setView("grid")}>
-                    <LayoutGrid className="h-3.5 w-3.5" /> Grid
+                    <LayoutGrid className="h-4 w-4" />
                   </ViewBtn>
                   <ViewBtn active={view === "timeline"} onClick={() => setView("timeline")}>
-                    <GitCommitVertical className="h-3.5 w-3.5" /> Timeline
+                    <GitCommitVertical className="h-4 w-4" />
                   </ViewBtn>
                 </div>
               </div>
@@ -327,9 +272,9 @@ const Dashboard = () => {
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
                   className={cn(
-                    "px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all duration-200",
+                    "px-5 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-widest border transition-all duration-200",
                     activeFilter === filter 
-                      ? "bg-primary text-primary-foreground border-primary" 
+                      ? "bg-primary text-primary-foreground border-primary shadow-glow-soft" 
                       : "bg-secondary/40 text-muted-foreground border-border/40 hover:border-primary/40"
                   )}
                  >

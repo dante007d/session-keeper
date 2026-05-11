@@ -126,8 +126,24 @@ const AttendanceTable = ({ members, onAdd, onToggle, onRemove, onPickFromRoster 
         <div className="rounded-2xl bg-background/40 border border-border overflow-hidden">
           <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-5 py-3 border-b border-border/60 bg-secondary/30">
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground w-6">#</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Member</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Status</span>
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Member</span>
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => members.forEach(m => !m.present && onToggle(m.id))}
+                  className="text-[9px] font-bold uppercase tracking-tighter text-primary hover:text-primary/70 transition-colors"
+                >
+                  Mark All Present
+                </button>
+                <button 
+                  onClick={() => members.forEach(m => m.present && onToggle(m.id))}
+                  className="text-[9px] font-bold uppercase tracking-tighter text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Mark All Absent
+                </button>
+              </div>
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center">Status</span>
             <span className="sr-only">Remove</span>
           </div>
 

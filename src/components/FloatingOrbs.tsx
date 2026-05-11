@@ -1,7 +1,7 @@
-import React from "react";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 
-export const FloatingOrbs: React.FC = () => {
+export const FloatingOrbs: React.FC = memo(() => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <motion.div
@@ -30,4 +30,6 @@ export const FloatingOrbs: React.FC = () => {
       />
     </div>
   );
-};
+});
+
+FloatingOrbs.displayName = "FloatingOrbs";

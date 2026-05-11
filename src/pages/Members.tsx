@@ -121,7 +121,7 @@ const Members = () => {
             transition={{ duration: 0.4 }}
           >
             <Link
-              to="/"
+              to="/teacher/dashboard"
               className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-smooth mb-4"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> Dashboard

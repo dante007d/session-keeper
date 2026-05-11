@@ -12,18 +12,23 @@ import { cn } from "@/lib/utils";
 import { LiveSessionMode } from "@/components/LiveSessionMode";
 import { useRoster } from "@/lib/rosterStore";
 
+import { useAnnouncements } from "@/lib/announcementsStore";
+
 const CreateSession = () => {
   const navigate = useNavigate();
   const { members: roster } = useRoster();
+  const { publish } = useAnnouncements();
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState<SessionDetails>({
     resourcePersons: "",
     host: "",
     volunteers: "",
     summary: "",
+    attendanceType: "phantom",
     rating: 0,
     tags: [],
   });
+  const [shouldBroadcast, setShouldBroadcast] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
   const [compileState, setCompileState] = useState<"idle" | "loading" | "success">("idle");
   const [liveMode, setLiveMode] = useState(false);
@@ -33,7 +38,7 @@ const CreateSession = () => {
     if (!trimmed) return;
     setMembers((prev) => {
       if (prev.some((m) => m.name.toLowerCase() === trimmed.toLowerCase())) return prev;
-      return [...prev, { id: crypto.randomUUID(), name: trimmed, present: true }];
+      return [...prev, { id: crypto.randomUUID(), name: trimmed, present: false }];
     });
   }, []);
 
@@ -48,7 +53,7 @@ const CreateSession = () => {
       const have = new Set(prev.map((m) => m.name.toLowerCase()));
       const additions = names
         .filter((n) => !have.has(n.toLowerCase()))
-        .map((name) => ({ id: crypto.randomUUID(), name, present: true }));
+        .map((name) => ({ id: crypto.randomUUID(), name, present: false }));
       return [...prev, ...additions];
     }), []);
 
@@ -82,12 +87,17 @@ const CreateSession = () => {
       members,
     });
 
+    if (shouldBroadcast) {
+      publish(
+        `🚀 New Session: "${session.title}" has been added to the chronicle. Attendance mode: ${details.attendanceType.toUpperCase()}.`,
+        "event"
+      );
+    }
+
     setCompileState("success");
     toast({ title: "Session archived", description: "Successfully added to your chronicle." });
     
-    setTimeout(() => {
-      navigate(`/session/${session.id}`);
-    }, 1500);
+    navigate(`/teacher/session/${session.id}`);
   };
 
   const line1 = "New session.".split(" ");
@@ -191,6 +201,21 @@ const CreateSession = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-20 flex flex-col items-center gap-6"
           >
+            <div className="flex items-center gap-3 mb-8 cursor-pointer group" onClick={() => setShouldBroadcast(!shouldBroadcast)}>
+              <div className={cn(
+                "w-10 h-6 rounded-full relative transition-all duration-300 border",
+                shouldBroadcast ? "bg-primary border-primary" : "bg-secondary border-border"
+              )}>
+                <motion.div 
+                  animate={{ x: shouldBroadcast ? 18 : 2 }}
+                  className="absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm" 
+                />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
+                Broadcast to Student Portal
+              </span>
+            </div>
+
             <motion.button
               onClick={handleSave}
               disabled={compileState !== "idle"}

@@ -61,7 +61,7 @@ export const THEMES: ThemeMeta[] = [
 ];
 
 const KEY = "bec.dev.theme";
-const DEFAULT_THEME: ThemeId = "parchment";
+const DEFAULT_THEME: ThemeId = "arctic";
 
 interface Ctx {
   theme: ThemeId;
@@ -97,13 +97,13 @@ const apply = (t: ThemeId) => {
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setThemeState] = useState<ThemeId>(() => {
     if (typeof window === "undefined") return DEFAULT_THEME;
-    const stored = localStorage.getItem(KEY);
+    const stored = sessionStorage.getItem(KEY);
     return isValidTheme(stored) ? stored : DEFAULT_THEME;
   });
 
   useEffect(() => {
     apply(theme);
-    localStorage.setItem(KEY, theme);
+    sessionStorage.setItem(KEY, theme);
   }, [theme]);
 
   const setTheme = useCallback((t: ThemeId) => setThemeState(t), []);

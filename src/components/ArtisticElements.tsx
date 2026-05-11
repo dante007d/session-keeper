@@ -7,7 +7,7 @@ interface TiltCardProps {
   className?: string;
 }
 
-export const TiltCard: React.FC<TiltCardProps> = ({ children, className }) => {
+export const TiltCard: React.FC<TiltCardProps> = React.memo(({ children, className }) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = () => {
@@ -42,7 +42,7 @@ export const TiltCard: React.FC<TiltCardProps> = ({ children, className }) => {
       {children}
     </div>
   );
-};
+});
 
 interface AttendanceBarProps {
   present: number;
@@ -97,7 +97,7 @@ interface MaskedWordProps {
   delay?: number;
 }
 
-export const MaskedWord: React.FC<MaskedWordProps> = ({ word, delay = 0 }) => {
+export const MaskedWord: React.FC<MaskedWordProps> = React.memo(({ word, delay = 0 }) => {
   const textRef = React.useRef<HTMLSpanElement>(null);
 
   React.useEffect(() => {
@@ -122,7 +122,7 @@ export const MaskedWord: React.FC<MaskedWordProps> = ({ word, delay = 0 }) => {
       </span>
     </span>
   );
-};
+});
 
 interface TypewriterTextProps {
   text: string;

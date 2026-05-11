@@ -1,14 +1,22 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FloatingInput, StarRating, SESSION_TAGS } from "./ArtisticElements";
 import { cn } from "@/lib/utils";
+import { X, Plus } from "lucide-react";
+
+export interface Resource {
+  label: string;
+  url: string;
+}
 
 export interface SessionDetails {
   resourcePersons: string;
   host: string;
   volunteers: string;
   summary: string;
+  attendanceType: 'normal' | 'phantom';
   rating: number;
   tags: string[];
+  resources?: Resource[];
 }
 
 interface SessionFormProps {
@@ -25,6 +33,23 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
       ? value.tags.filter(t => t !== tagId)
       : [...value.tags, tagId];
     update("tags", next);
+  };
+
+  const addResource = () => {
+    const nextResources = [...(value.resources || []), { label: "", url: "" }];
+    update("resources", nextResources);
+  };
+
+  const updateResource = (index: number, field: keyof Resource, v: string) => {
+    const nextResources = (value.resources || []).map((r, i) => 
+      i === index ? { ...r, [field]: v } : r
+    );
+    update("resources", nextResources);
+  };
+
+  const removeResource = (index: number) => {
+    const nextResources = (value.resources || []).filter((_, i) => i !== index);
+    update("resources", nextResources);
   };
 
   return (
@@ -45,7 +70,7 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
             </p>
             <h2 className="text-2xl font-bold tracking-tight">Session Intelligence</h2>
             <p className="text-sm text-muted-foreground mt-2 font-medium">
-              Capture the context of today's engagement.
+              Configure your verification and content parameters.
             </p>
           </div>
         </div>
@@ -53,6 +78,50 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
 
       {/* Body */}
       <div className="p-8 space-y-8">
+        {/* Attendance Type Selector */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4 ml-1">
+            Attendance Verification Mode
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => update("attendanceType", "normal")}
+              className={cn(
+                "p-5 rounded-2xl border-2 transition-all text-left group",
+                value.attendanceType === "normal" 
+                  ? "bg-primary/5 border-primary shadow-glow-soft" 
+                  : "bg-secondary/40 border-border/60 hover:border-primary/40"
+              )}
+            >
+              <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center mb-3 transition-all", 
+                value.attendanceType === "normal" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}>
+                <Plus size={16} />
+              </div>
+              <p className="font-bold text-sm">Standard PIN</p>
+              <p className="text-[9px] font-medium text-muted-foreground mt-1 uppercase tracking-wider">Fast · Traditional · PIN/QR</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => update("attendanceType", "phantom")}
+              className={cn(
+                "p-5 rounded-2xl border-2 transition-all text-left group",
+                value.attendanceType === "phantom" 
+                  ? "bg-primary/5 border-primary shadow-glow-soft" 
+                  : "bg-secondary/40 border-border/60 hover:border-primary/40"
+              )}
+            >
+              <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center mb-3 transition-all", 
+                value.attendanceType === "phantom" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}>
+                <Shield size={16} />
+              </div>
+              <p className="font-bold text-sm">Phantom Mesh</p>
+              <p className="text-[9px] font-medium text-muted-foreground mt-1 uppercase tracking-wider">Secure · Cryptographic · Mesh</p>
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-6">
           <FloatingInput
             label="Resource Persons"
@@ -85,7 +154,60 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
           </div>
         </div>
 
-        {/* F2. Tags */}
+        {/* Resources */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between mb-4">
+            <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground ml-1">
+              Session Resources
+            </label>
+            <button 
+              type="button"
+              onClick={addResource}
+              className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
+            >
+              <Plus size={14} /> Add Link
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <AnimatePresence>
+              {(value.resources || []).map((res, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  className="flex gap-2 items-center"
+                >
+                  <input
+                    placeholder="Label (e.g. Slides)"
+                    className="w-1/3 p-3 rounded-xl bg-secondary/30 border border-border text-xs font-bold focus:outline-none focus:border-primary transition-all"
+                    value={res.label}
+                    onChange={(e) => updateResource(i, "label", e.target.value)}
+                  />
+                  <input
+                    placeholder="https://..."
+                    className="flex-1 p-3 rounded-xl bg-secondary/30 border border-border text-xs font-bold focus:outline-none focus:border-primary transition-all"
+                    value={res.url}
+                    onChange={(e) => updateResource(i, "url", e.target.value)}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => removeResource(i)}
+                    className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {(value.resources || []).length === 0 && (
+              <p className="text-[10px] font-bold text-muted-foreground italic ml-1">Optional resource links for students.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Tags */}
         <div>
           <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4 ml-1">
             Categorization
@@ -109,7 +231,7 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
           </div>
         </div>
 
-        {/* F1. Rating */}
+        {/* Rating */}
         <div className="pt-2">
           <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4 ml-1">
             Session Quality Rating
@@ -123,5 +245,7 @@ const SessionForm = ({ value, onChange }: SessionFormProps) => {
     </motion.section>
   );
 };
+
+import { Shield } from "lucide-react";
 
 export default SessionForm;

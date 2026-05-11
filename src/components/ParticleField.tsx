@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, memo } from "react";
 
-export const ParticleField: React.FC = () => {
+export const ParticleField: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -14,18 +14,25 @@ export const ParticleField: React.FC = () => {
     let particles: { x: number; y: number; size: number; speedX: number; speedY: number; opacity: number }[] = [];
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      ctx.scale(dpr, dpr);
+      
       initParticles();
     };
 
     const initParticles = () => {
       particles = [];
-      const count = Math.floor((canvas.width * canvas.height) / 15000);
+      const rect = canvas.getBoundingClientRect();
+      const count = Math.floor((rect.width * rect.height) / 15000);
       for (let i = 0; i < count; i++) {
         particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
           size: Math.random() * 1.5 + 0.5,
           speedX: (Math.random() - 0.5) * 0.3,
           speedY: (Math.random() - 0.5) * 0.3,
@@ -35,16 +42,17 @@ export const ParticleField: React.FC = () => {
     };
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
       
       particles.forEach((p) => {
         p.x += p.speedX;
         p.y += p.speedY;
 
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+        if (p.x < 0) p.x = rect.width;
+        if (p.x > rect.width) p.x = 0;
+        if (p.y < 0) p.y = rect.height;
+        if (p.y > rect.height) p.y = 0;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -71,4 +79,6 @@ export const ParticleField: React.FC = () => {
       className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
     />
   );
-};
+});
+
+ParticleField.displayName = "ParticleField";

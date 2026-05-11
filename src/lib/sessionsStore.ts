@@ -6,11 +6,20 @@ export interface Member {
   present: boolean;
 }
 
+export interface Resource {
+  label: string;
+  url: string;
+}
+
 export interface SessionDetails {
   resourcePersons: string;
   host: string;
   volunteers: string;
   summary: string;
+  attendanceType: 'normal' | 'phantom';
+  rating?: number;
+  tags?: string[];
+  resources?: Resource[];
 }
 
 export interface Session extends SessionDetails {
@@ -51,6 +60,19 @@ export const sessionsStore = {
     return session;
   },
   remove: (id: string) => write(read().filter((s) => s.id !== id)),
+  updateAttendance: (sessionId: string, studentId: string, present: boolean) => {
+    const list = read();
+    const next = list.map(s => {
+      if (s.id !== sessionId) return s;
+      return {
+        ...s,
+        members: s.members.map(m => 
+          m.id === studentId || m.name === studentId ? { ...m, present } : m
+        )
+      };
+    });
+    write(next);
+  },
   clear: () => write([]),
 };
 

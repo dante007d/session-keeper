@@ -142,7 +142,7 @@ const SessionCard = ({ session, index = 0 }: Props) => {
 
             <div className="flex gap-2">
                <Link 
-                to={`/session/${session.id}`}
+                to={`/teacher/session/${session.id}`}
                 className="flex-1 h-11 rounded-2xl bg-foreground text-background font-bold text-xs flex items-center justify-center hover:scale-[1.02] transition-transform active:scale-[0.98]"
                >
                  View Record
